@@ -1,0 +1,61 @@
+import java.util.Scanner;
+
+public class Attempts {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the target word: ");
+        String target = scanner.nextLine().toUpperCase();
+        scanner.close();
+
+        long attempts = 0;
+        char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        StringBuilder lastPrefix = new StringBuilder();
+
+        System.out.println("Attempts:");
+
+        for (int length = 1; length <= target.length(); length++) {
+            attempts += generateCombinations(target, alphabet, length, attempts, lastPrefix);
+        }
+
+        System.out.println("Total attempts to write \"" + target + "\": " + attempts);
+    }
+
+    public static long generateCombinations(String target, char[] alphabet, int length, long currentAttempts, StringBuilder lastPrefix) {
+        long attempts = 0;
+        long totalCombinations = (long) Math.pow(alphabet.length, length);
+
+        for (long i = 0; i < totalCombinations; i++) {
+            String combination = generateString(alphabet, length, i);
+            if (combination.compareTo(lastPrefix.toString()) > 0) {
+                System.out.println("Attempt " + (currentAttempts + attempts + 1) + ": " + combination);
+                attempts++;
+            }
+
+            if (combination.equals(target.substring(0, Math.min(length, target.length())))) {
+                lastPrefix.setLength(0);  // Clear the lastPrefix
+                lastPrefix.append(combination);
+                break;
+            }
+        }
+
+        return attempts;
+    }
+
+    public static String generateString(char[] alphabet, int length, long num) {
+        StringBuilder result = new StringBuilder();
+        long currentNum = num;
+
+        for (int i = 0; i < length; i++) {
+            int index = (int) (currentNum % alphabet.length);
+            result.insert(0, alphabet[index]);
+            currentNum /= alphabet.length;
+        }
+
+        while (result.length() < length) {
+            result.insert(0, 'A');
+        }
+
+        return result.toString();
+    }
+}
